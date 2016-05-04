@@ -12,14 +12,40 @@
   This was developed on an arduino mega 2560.
   
 */
-
-
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <AccelStepper.h>
 
-// Transistor controlled wires to the dash
+/*
+  Transistor controlled wires to the back of the instrument cluster:
+  These must be supplied +12v via a high-side switch
+  from the arduino pins. Build a high-side NPN+PNP switch
+  for each wire and assign the appropriate pins here. These are not simple
+  logic signals, I have observed some of these wires sinking up to 115mA @ 12V.
+  
+  In addition to these transistor controlled wires the following connections must
+  be permanently made:
+
+    12V -> red/light purple (not red/dark purple!) on blue plug
+    GND -> brown wire on blue plug
+
+*/
+
+/* 
+  ignition wire:  light purple/black (not dark purple/black!) wire on blue plug
+
+  When supplied +12v this wire boots up the instrument cluster as when the key is
+  inserted into the ignition on the real car.
+*/
 const int PIN_DASH_IGNITION = 13;
+
+/*
+  illumination wire: light blue/dark blue wire on blue plug
+
+  When supplied +12v this indicates the dash should be lit up, as happens when 
+  turning on the headlights in the real car.
+
+*/
 const int PIN_DASH_ILLUM = 12;
 
 // Definitions for the stock stepper motors which drive the gauges in the instrument cluster.
@@ -46,13 +72,28 @@ const float TACH_SCALE = 0.057; // RPM per steps
 const float FUEL_SCALE = 3.25;
 const float SPEED_SCALE_MPH = 1.785; // Steps per mph
 
+/*
+  Adafruit motor shields only support two motors each. Solder the jumper
+  on one of the boards so that it takes the 0x61 address.
+*/
 Adafruit_MotorShield motorBoard0 = Adafruit_MotorShield(0x60);
 Adafruit_MotorShield motorBoard1 = Adafruit_MotorShield(0x61);
 
-Adafruit_StepperMotor *speedoMotor = motorBoard1.getStepper(STEPS, 1);
+/*
+  Connect two motors to the first board and one to the second one.
+  Define which motors are connected to what here. The second parameter
+  is either 1 or 2, indicating which screw terminals the motor is connected
+  to on the motor shield. Power the motor shield driver chips with +5v.
+*/
 Adafruit_StepperMotor *fuelMotor = motorBoard0.getStepper(STEPS, 1);
 Adafruit_StepperMotor *tachMotor = motorBoard0.getStepper(STEPS, 2);
+Adafruit_StepperMotor *speedoMotor = motorBoard1.getStepper(STEPS, 1);
 
+/*
+  Forward/backward controls for the gauge steppers. If some of your gauges 
+  are reversed flip the lambda functions around here or switch the terminals
+  on the motor shield.
+*/
 AccelStepper speedo([]{speedoMotor->onestep(FORWARD, STEP_MODE);},
                     []{speedoMotor->onestep(BACKWARD, STEP_MODE);});
 AccelStepper tach([]{tachMotor->onestep(FORWARD, STEP_MODE);},

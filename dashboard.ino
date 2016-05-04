@@ -48,10 +48,12 @@ const int PIN_DASH_IGNITION = 13;
 */
 const int PIN_DASH_ILLUM = 12;
 
-// Definitions for the stock stepper motors which drive the gauges in the instrument cluster.
-// The motor pins must be detached from the instrument cluster PCB and wires soldered
-// to a motor driver connected to the arduino; I am using the AdaFruit Motor shield v2.0. The
-// motors consume about 100ma @ 5V total if all three are running.
+/*
+  Definitions for the stock stepper motors which drive the gauges in the instrument cluster.
+  The motor pins must be detached from the instrument cluster PCB and wires soldered
+  to a motor driver connected to the arduino; I am using the AdaFruit Motor shield v2.0. The
+  motors consume about 100ma @ 5V total if all three are running.
+*/
 const int STEP_MODE = SINGLE;
 const int STEPS = 500;
 

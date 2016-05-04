@@ -1,5 +1,4 @@
 /*
-
   VW New Beetle (1999-2011) real dashboard for drivings simulators.
 
   Author: Cyle Riggs <beardedfoo@gmail.com>
@@ -199,12 +198,18 @@ void serialEvent() {
 // Parse a command line when it is ready
 void parseInput() {
   if (inputReady) {
+    // Provide remote echo. This can be removed if performance becomes a problem
     Serial.print(inputString);
+    
+    // Take commands as "[key]=[value]"
     int sepIndex = inputString.indexOf('=');
     if (sepIndex > 0) {
       String key = inputString.substring(0, sepIndex);
       String value = inputString.substring(sepIndex+1);
       
+      // Act on commands and respond "ok"
+      
+      // Take speed as either miles or km and position gauge
       if (key == "mph") {
         Serial.print("o");
         setSpeedMPH(value.toInt());
@@ -213,28 +218,38 @@ void parseInput() {
         Serial.print("o");
         setSpeedKMH(value.toInt());
         Serial.println("k");
+      
+      // Set tach position as full rpm count
       } else if (key == "rpm") {
         Serial.print("o");
         setRPM(value.toInt());
         Serial.println("k");
+        
+      // Set fuel as a percentage
       } else if (key == "fuel") {
         Serial.print("o");
         setFuel(value.toInt());
         Serial.println("k");
+        
+      // Respond "?" with usage info for unknown commands
       } else {
-        Serial.println("?");
+        Serial.println("? [rpm|kmh|fuel|mph]=val");
       }
     } else {
       Serial.println("? [rpm|kmh|fuel|mph]=val");
     }
+    
+    // Prepare values for next command to be received
     inputString = "";
     inputReady = false;
   }
 }
 
 void loop() {
+  // Look for and parse any available input commands
   parseInput();
   
+  // Move motors towards their current target positions
   speedo.run();
   tach.run();
   fuel.run();

@@ -70,7 +70,7 @@ const int SPEEDO_SPEED = 250;
 const int SPEEDO_ACCEL = 250;
 
 const float TACH_SCALE = 0.057; // RPM per steps
-const float FUEL_SCALE = 3.25;
+const float FUEL_SCALE = 3.25; // Steps per fuel percentage
 const float SPEED_SCALE_MPH = 1.785; // Steps per mph
 
 /*
